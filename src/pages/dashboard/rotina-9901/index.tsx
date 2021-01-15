@@ -125,6 +125,7 @@ const Rotina9901: React.FC = () => {
   const pesquisarProdutos = useCallback((data: PesquisaForm) => {
     const fornecePesquisa =
       data.fornecedor === 'SELECIONE UM FORNECEDOR...' ? '' : data.fornecedor;
+
     const dataPesquisa = {
       codfilial: data.filial,
       produto: data.codprod,
@@ -176,6 +177,9 @@ const Rotina9901: React.FC = () => {
       codprod: produtoSelecionado.codprod,
       filial: filialSelecionada,
     };
+
+    console.log(parametros);
+
     history.push('dados-logisticos/editar', parametros);
   }, [history, produtoSelecionado, filialSelecionada]);
 
@@ -198,6 +202,9 @@ const Rotina9901: React.FC = () => {
                   name="filial"
                   description="FILIAL"
                   percWidth={8}
+                  onChange={(e) => {
+                    setFilialSelecionada(Number(e.target.value));
+                  }}
                 >
                   <option value={filialSelecionada}>{filialSelecionada}</option>
                   {filiais
