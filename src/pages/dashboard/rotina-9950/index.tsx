@@ -1154,30 +1154,58 @@ const Rotina9950: React.FC = () => {
 
           let params = {} as DTOImpressoes;
 
-          if (dataPesquisa.numos) {
-            params = {
-              app: 'EPCWMS',
-              tipousu: 'U',
-              matricula: usuario.codigo,
-              tamanho: 'G',
-              nrorel: 9029,
-              pAntecipado: dataImpressao.antecipado,
-              pNumos: dataPesquisa.numos,
-              pDtIni: dataInicialFormatada,
-              pDtFim: dataFinalFormatada,
-            };
-          } else {
-            params = {
-              app: 'EPCWMS',
-              tipousu: 'U',
-              matricula: usuario.codigo,
-              tamanho: 'G',
-              nrorel: 9029,
-              pAntecipado: dataImpressao.antecipado,
-              pNumtranswms: dataImpressao.cargasTransacoes,
-              pDtIni: dataInicialFormatada,
-              pDtFim: dataFinalFormatada,
-            };
+          if (modeloSeparacao === 'C') {
+            if (dataPesquisa.numos) {
+              params = {
+                app: 'EPCWMS',
+                tipousu: 'U',
+                matricula: usuario.codigo,
+                tamanho: 'G',
+                nrorel: 9029,
+                pAntecipado: dataImpressao.antecipado,
+                pNumos: dataPesquisa.numos,
+                pDtIni: dataInicialFormatada,
+                pDtFim: dataFinalFormatada,
+              };
+            } else {
+              params = {
+                app: 'EPCWMS',
+                tipousu: 'U',
+                matricula: usuario.codigo,
+                tamanho: 'G',
+                nrorel: 9029,
+                pAntecipado: dataImpressao.antecipado,
+                pNumcar: dataImpressao.cargasTransacoes,
+                pDtIni: dataInicialFormatada,
+                pDtFim: dataFinalFormatada,
+              };
+            }
+          } else if (modeloSeparacao !== 'C') {
+            if (dataPesquisa.numos) {
+              params = {
+                app: 'EPCWMS',
+                tipousu: 'U',
+                matricula: usuario.codigo,
+                tamanho: 'G',
+                nrorel: 9029,
+                pAntecipado: dataImpressao.antecipado,
+                pNumos: dataPesquisa.numos,
+                pDtIni: dataInicialFormatada,
+                pDtFim: dataFinalFormatada,
+              };
+            } else {
+              params = {
+                app: 'EPCWMS',
+                tipousu: 'U',
+                matricula: usuario.codigo,
+                tamanho: 'G',
+                nrorel: 9029,
+                pAntecipado: dataImpressao.antecipado,
+                pNumtranswms: dataImpressao.cargasTransacoes,
+                pDtIni: dataInicialFormatada,
+                pDtFim: dataFinalFormatada,
+              };
+            }
           }
 
           await apiRelatorios
@@ -2260,6 +2288,7 @@ const Rotina9950: React.FC = () => {
                 !faturados) ||
               (modeloSeparacao !== 'C' &&
                 pedidosSelecionados.length === 1 &&
+                filialSelecionada === 25 &&
                 !faturados &&
                 gerados) ? (
                 <button type="button" onClick={() => setDialogCortar(true)}> {/*eslint-disable-line*/}
