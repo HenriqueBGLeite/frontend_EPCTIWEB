@@ -100,7 +100,7 @@ export const Container = styled.div<Base>`
     transform: translate(308px, 0);
     padding-right: 0;
     position: fixed;
-    transition-delay: 0ms;
+    transition-delay: 500ms;
   }
 
   #lateral .box {
