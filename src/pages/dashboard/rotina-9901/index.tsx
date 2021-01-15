@@ -178,8 +178,6 @@ const Rotina9901: React.FC = () => {
       filial: filialSelecionada,
     };
 
-    console.log(parametros);
-
     history.push('dados-logisticos/editar', parametros);
   }, [history, produtoSelecionado, filialSelecionada]);
 
