@@ -122,7 +122,7 @@ const SignIn: React.FC = () => {
           <Form ref={formRef} onSubmit={handleSubmit}>
             <p>
               Versão {document.location.port === '8203' ? 'de Homologação' : ''}
-              : 29.12.20.01
+              : 22.01.21.01
             </p>
             <Input
               focus

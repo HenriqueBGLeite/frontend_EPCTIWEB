@@ -2065,8 +2065,9 @@ const Rotina9950: React.FC = () => {
               name="filial"
               description="FILIAL"
               percWidth={4}
+              onChange={(e) => setFilialSelecionada(Number(e.target.value))}
             >
-              <option value={filialSelecionada}>{filialSelecionada}</option>
+              <option value={usuario.filial}>{usuario.filial}</option>
               {filiais
                 .filter((fil) => Number(fil.codigo) !== Number(usuario.filial))
                 .map((filial) => (
@@ -2229,68 +2230,83 @@ const Rotina9950: React.FC = () => {
             />
             <Divisor />
             <Button>
-              <button id="pesquisar" type="submit">
+              <button
+                id="pesquisar"
+                type="submit"
+                disabled={
+                  loadingGerar ||
+                  loadingImprimir ||
+                  loadingLiberarFaturamento ||
+                  loadingEstornar ||
+                  loadingCortar
+                }
+              >
                 <FaSearch />
                 Pesquisar
               </button>
-              {((modeloSeparacao !== 'C' && pedidosSelecionados.length >= 1) ||
-                (modeloSeparacao === 'C' && cargaSelecionadas.length >= 1)) &&
-              !gerados ? (
-                <>
-                  {modeloSeparacao !== 'C' ? (
-                    <button type="button" onClick={() => setDialogGerar(true)}>
-                      <FaPlay />
-                      Gerar O.S.
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => gerarOs()}>
-                      <FaPlay />
-                      Gerar O.S.
-                    </button>
-                  )}
-                </>
-              ) : (
-                <button type="button" disabled>
-                  <FaPlay />
-                  Gerar O.S.
-                </button>
-              )}
-              {((modeloSeparacao !== 'C' && pedidosSelecionados.length >= 1) ||
-                (modeloSeparacao === 'C' && cargaSelecionadas.length >= 1)) &&
-              gerados ? (
-                <button type="button" onClick={() => setDialogImprimir(true)}>
-                  <FiPrinter />
-                  Imprimir O.S.
-                </button>
-              ) : (
-                <button type="button" disabled>
-                  <FiPrinter />
-                  Imprimir O.S.
-                </button>
-              )}
-              {((modeloSeparacao !== 'C' && pedidosSelecionados.length >= 1) ||
-                (modeloSeparacao === 'C' && cargaSelecionadas.length === 1)) &&
-              gerados ? (
-                <button type="button" onClick={() => setDialogEstornar(true)}>
-                  <FaTrashAlt />
-                  Estornar O.S.
-                </button>
-              ) : (
-                <button type="button" disabled>
-                  <FaTrashAlt />
-                  Estornar O.S.
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (modeloSeparacao !== 'C') {
+                    setDialogGerar(true);
+                  } else {
+                    gerarOs();
+                  }
+                }}
+                disabled={
+                  !(
+                    (modeloSeparacao !== 'C' &&
+                      pedidosSelecionados.length >= 1) ||
+                    (modeloSeparacao === 'C' && cargaSelecionadas.length >= 1)
+                  ) ||
+                  gerados ||
+                  loading
+                }
+              >
+                <FaPlay />
+                Gerar O.S.
+              </button>
+              <button
+                type="button"
+                onClick={() => setDialogImprimir(true)}
+                disabled={
+                  !(
+                    (modeloSeparacao !== 'C' &&
+                      pedidosSelecionados.length >= 1) ||
+                    (modeloSeparacao === 'C' && cargaSelecionadas.length >= 1)
+                  ) ||
+                  !gerados ||
+                  loading
+                }
+              >
+                <FiPrinter />
+                Imprimir O.S.
+              </button>
+              <button
+                type="button"
+                onClick={() => setDialogEstornar(true)}
+                disabled={
+                  !(
+                    (modeloSeparacao !== 'C' &&
+                      pedidosSelecionados.length >= 1) ||
+                    (modeloSeparacao === 'C' && cargaSelecionadas.length === 1)
+                  ) ||
+                  !gerados ||
+                  loading
+                }
+              >
+                <FaTrashAlt />
+                Estornar O.S.
+              </button>
               {(modeloSeparacao === 'C' &&
                 cargaSelecionadas[0]?.separacao === 100 &&
-                cargaSelecionadas.length === 1 &&
-                gerados &&
-                !faturados) ||
+                cargaSelecionadas.length === 1) ||
               (modeloSeparacao !== 'C' &&
                 pedidosSelecionados.length === 1 &&
-                filialSelecionada === 25 &&
+                filialSelecionada !== 25 &&
+                gerados &&
                 !faturados &&
-                gerados) ? (
+                !loading) ? (
                 <button type="button" onClick={() => setDialogCortar(true)}> {/*eslint-disable-line*/}
                   <FiScissors />
                   Corte
@@ -2301,24 +2317,22 @@ const Rotina9950: React.FC = () => {
                   Corte
                 </button>
               )}
-              {modeloSeparacao === 'C' &&
-              cargaSelecionadas.length === 1 &&
-              gerados &&
-              impressos &&
-              !faturados ? (
-                <button
-                  type="button"
-                  onClick={() => setDialogLiberarFaturamento(true)}
-                >
-                  <FiThumbsUp />
-                  Liberar p/ Faturar
-                </button>
-              ) : (
-                <button type="button" disabled>
-                  <FiThumbsUp />
-                  Liberar p/ Faturar
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setDialogLiberarFaturamento(true)}
+                disabled={
+                  !(
+                    modeloSeparacao === 'C' &&
+                    cargaSelecionadas.length === 1 &&
+                    gerados &&
+                    impressos &&
+                    !faturados
+                  ) || loading
+                }
+              >
+                <FiThumbsUp />
+                Liberar p/ Faturar
+              </button>
             </Button>
           </Form>
           {dialogGerar ? (
