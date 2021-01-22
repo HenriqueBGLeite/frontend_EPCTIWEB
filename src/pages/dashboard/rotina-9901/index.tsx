@@ -204,7 +204,7 @@ const Rotina9901: React.FC = () => {
                     setFilialSelecionada(Number(e.target.value));
                   }}
                 >
-                  <option value={filialSelecionada}>{filialSelecionada}</option>
+                  <option value={usuario.filial}>{usuario.filial}</option>
                   {filiais
                     .filter(
                       (fil) => Number(fil.codigo) !== Number(usuario.filial),
@@ -348,6 +348,7 @@ const Rotina9901: React.FC = () => {
               width="120px"
               color="#c22e2c"
             />
+            <h1>Carregando filiais, aguarde...</h1>
           </Loanding>
         )}
       </Container>

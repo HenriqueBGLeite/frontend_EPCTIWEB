@@ -122,6 +122,7 @@ interface DataProduto {
       descTipoEstrutura: string;
       tipoPicking: string;
       codEndereco: number;
+      codEnderecoAnterior: number;
       deposito: number;
       rua: number;
       predio: number;
@@ -130,6 +131,7 @@ interface DataProduto {
       capacidade: number;
       percPontoReposicao: number;
       pontoReposicao: number;
+      estoque: number;
     },
   ];
   // Endereços de loja
@@ -212,6 +214,7 @@ interface DataPicking {
   descTipoEstrutura: string;
   tipoPicking: string;
   codEndereco: number;
+  codEnderecoAnterior: number;
   deposito: number;
   rua: number;
   predio: number;
@@ -221,6 +224,7 @@ interface DataPicking {
   percPontoReposicao: number;
   percReposicao?: number;
   pontoReposicao: number;
+  estoque: number;
 }
 
 interface DataEndLoja {
@@ -302,6 +306,7 @@ const DadosLogistico: React.FC = () => {
   const [dialogImpressao, setDialogImpressao] = useState(false);
   const [dialogExclusao, setDialogExclusao] = useState(false);
   const [dialogPicking, setDialogPicking] = useState(false);
+  const [dialogTransfPicking, setDialogTransfPicking] = useState(false);
   const [dialogEndLoja, setDialogEndLoja] = useState(false);
   const [dialogEmbAuxiliar, setDialogEmbAuxiliar] = useState(false);
   const [dialogCodBarraAlt, setDialogCodBarraAlt] = useState(false);
@@ -384,15 +389,15 @@ const DadosLogistico: React.FC = () => {
 
     setCompTabela(String(parseFloat(tamanhoPlanilha.toFixed(2))));
 
-    const impedeReload = (): void => {
-      window.addEventListener('beforeunload', (event) => {
-        event.preventDefault();
-        // Chrome requires returnValue to be set.
-        event.returnValue = '';
-      });
-    };
+    // const impedeReload = (): void => {
+    //   window.addEventListener('beforeunload', (event) => {
+    //     event.preventDefault();
+    //     // Chrome requires returnValue to be set.
+    //     event.returnValue = '';
+    //   });
+    // };
 
-    impedeReload();
+    // impedeReload();
   }, [parametros, history, usuario]);
 
   const gravarDadosProduto = useCallback(
@@ -445,15 +450,25 @@ const DadosLogistico: React.FC = () => {
           setMensagemLoading('Gravando as alterações, por favor aguarde...');
 
           await api
-            .post('Rotina9901/GravarAlteracoesCadastro/', dataProduto)
+            .post<string>('Rotina9901/GravarAlteracoesCadastro/', dataProduto)
             .then((response) => {
               const retornoGravacao = response.data;
-              if (retornoGravacao === 'Registro alterado com sucesso.') {
+
+              if (
+                retornoGravacao === 'Dados gravados com sucesso!' ||
+                retornoGravacao.includes(
+                  'O.S. de transferência gerada com sucesso. Número: ',
+                ) === true
+              ) {
+                createMessage({
+                  type: 'success',
+                  message: retornoGravacao,
+                });
                 history.goBack();
               } else {
                 createMessage({
                   type: 'error',
-                  message: retorno,
+                  message: retornoGravacao,
                 });
                 setLoading(false);
               }
@@ -959,6 +974,64 @@ const DadosLogistico: React.FC = () => {
       }
     },
     [dataProduto, usuario],
+  );
+
+  const transferirPicking = useCallback(
+    (retorno: boolean, data: DataPicking) => {
+      if (retorno) {
+        data.percPontoReposicao = Number(data.percReposicao);
+        data.codTipoEndereco = Number(data.tipoEndereco);
+        data.codTipoEstrutura = Number(data.tipoEstrutura);
+        data.percPontoReposicao = Number(data.percReposicao);
+
+        dataListProduto.tipoEndereco
+          .filter((tipo) => tipo.codigo === data.codTipoEndereco)
+          .map((tipo) => {
+            data.descTipoEndereco = tipo.descricao;
+
+            return tipo;
+          });
+
+        dataListProduto.tipoEstrutura
+          .filter((tipo) => tipo.codigo === data.codTipoEstrutura)
+          .map((tipo) => {
+            data.descTipoEstrutura = tipo.descricao;
+
+            return tipo;
+          });
+
+        dataProduto.picking
+          .filter(
+            (pk) =>
+              Number(pk.codEndereco) === Number(pickingSelecionado.codEndereco),
+          )
+          .map((pk) => {
+            pk.codTipoEndereco = data.codTipoEndereco;
+            pk.descTipoEndereco = data.descTipoEndereco;
+            pk.codTipoEstrutura = data.codTipoEstrutura;
+            pk.descTipoEstrutura = data.descTipoEstrutura;
+            pk.tipoPicking = pickingSelecionado.tipoPicking;
+            pk.codEndereco = data.codEndereco;
+            pk.deposito = data.deposito;
+            pk.rua = data.rua;
+            pk.predio = data.predio;
+            pk.nivel = data.nivel;
+            pk.apto = data.apto;
+            pk.capacidade = data.capacidade;
+            pk.percPontoReposicao = data.percPontoReposicao;
+            pk.pontoReposicao = data.pontoReposicao;
+
+            return pk;
+          });
+        setEsconderTabPicking(false);
+      }
+
+      setEdicao(false);
+      setDialogPicking(false);
+      setPickingSelecionado({} as DataPicking);
+      setDialogTransfPicking(false);
+    },
+    [pickingSelecionado, dataProduto.picking, dataListProduto],
   );
 
   return (
@@ -2497,8 +2570,26 @@ const DadosLogistico: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        // disabled={!pickingSelecionado.codEndereco}
-                        disabled
+                        onClick={() => {
+                          dataProduto.picking
+                            .filter(
+                              (pk) =>
+                                pk.codEndereco ===
+                                Number(pickingSelecionado.codEndereco),
+                            )
+                            .map((pk) => {
+                              pk.codEnderecoAnterior =
+                                pickingSelecionado.codEndereco;
+
+                              return pk;
+                            });
+                          setDialogTransfPicking(true);
+                        }}
+                        disabled={
+                          pickingSelecionado?.estoque === 0 ||
+                          !pickingSelecionado?.codEndereco ||
+                          usuario.permiteAltDadosLogisticos === 'N'
+                        }
                       >
                         <FiRepeat />
                         Transferir
@@ -2507,6 +2598,7 @@ const DadosLogistico: React.FC = () => {
                         type="button"
                         onClick={() => setDialogExclusao(true)}
                         disabled={
+                          pickingSelecionado?.estoque > 0 ||
                           !pickingSelecionado?.codEndereco ||
                           usuario.permiteAltDadosLogisticos === 'N'
                         }
@@ -2528,8 +2620,8 @@ const DadosLogistico: React.FC = () => {
                         onSelectionChange={(e) => {
                           setPickingSelecionado(e.value);
                         }}
-                        scrollHeight="20vh"
                         style={{ width: `${compTabela}px` }}
+                        scrollHeight="20vh"
                         metaKeySelection={false}
                       >
                         <Column
@@ -3109,6 +3201,24 @@ const DadosLogistico: React.FC = () => {
                   tipoEstrutura: dataListProduto.tipoEstrutura,
                 }}
                 executar={adicionaNovoPicking}
+              />
+            ) : (
+              <> </>
+            )}
+            {dialogTransfPicking ? (
+              <Dialog
+                title="Transferência de Picking"
+                message={`*Informar quantidades em unidade de venda. (Qt.Emb.Master: ${dataProduto.qtunitcx})`}
+                tipoDialog="PKTRANSF"
+                cabecalho={{
+                  codprod: dataProduto.codprod,
+                  descricao: dataProduto.descricao,
+                  codfilial: dataProduto.codfilial,
+                  descFilial: dataProduto.descFilial,
+                  tipoEndereco: dataListProduto.tipoEndereco,
+                  tipoEstrutura: dataListProduto.tipoEstrutura,
+                }}
+                executar={transferirPicking}
               />
             ) : (
               <> </>

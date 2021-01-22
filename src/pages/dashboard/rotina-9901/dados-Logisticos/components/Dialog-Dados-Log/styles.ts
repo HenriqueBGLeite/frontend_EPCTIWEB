@@ -84,6 +84,7 @@ export const Tabela = styled.div`
   .p-datatable,
   .p-component,
   .p-datatable-scrollable,
+  .p-datatable-header,
   .p-datatable-hoverable-rows {
     margin: 0% !important;
   }

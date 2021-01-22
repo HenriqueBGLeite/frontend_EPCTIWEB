@@ -377,7 +377,6 @@ export const Loanding = styled.div`
 `;
 
 export const Button = styled.div`
-  width: 100%;
   margin-bottom: 8px;
   display: flex;
   flex-wrap: wrap;

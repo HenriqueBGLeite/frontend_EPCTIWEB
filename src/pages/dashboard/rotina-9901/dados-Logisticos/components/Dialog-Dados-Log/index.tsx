@@ -17,7 +17,7 @@ import { Container, Tabela, Footer } from './styles';
 interface DialogProps {
   title: string;
   message?: string;
-  tipoDialog: 'EMBALAGEM' | 'PK' | 'LOJA';
+  tipoDialog: 'EMBALAGEM' | 'PK' | 'LOJA' | 'PKTRANSF';
   edicao?: boolean;
   dataEdicao?: {
     codBarra: number;
@@ -127,6 +127,23 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
         });
     }
 
+    if (tipoDialog === 'PKTRANSF') {
+      api
+        .get<Endereco[]>(
+          `Rotina9901/ListaEnderecosLivres/${cabecalho.codfilial}`,
+        )
+        .then((response) => {
+          setListaEnderecos(response.data);
+          setMostrarTabela(true);
+        })
+        .catch((err) => {
+          createMessage({
+            type: 'error',
+            message: `Erro: ${err.message}`,
+          });
+        });
+    }
+
     if (edicaoPk) {
       setOcultarPesquisa(true);
       setMostrarDadosPicking(true);
@@ -195,8 +212,26 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
   const selecionouEndereco = useCallback(async () => {
     await habilitaEscondeCampos();
 
+    if (tipoDialog === 'PKTRANSF') {
+      formRefDados.current?.setFieldValue(
+        'tipoEndereco',
+        enderecoSelecionado.codTipoEndereco,
+      );
+
+      formRefDados.current?.setFieldValue(
+        'tipoEstrutura',
+        enderecoSelecionado.codTipoEstrutura,
+      );
+
+      setDataPesquisa({
+        ...dataPesquisa,
+        tipoEndereco: enderecoSelecionado.codTipoEndereco,
+        tipoEstrutura: enderecoSelecionado.codTipoEstrutura,
+      });
+    }
+
     document.getElementById('capacidadeFoco')?.focus();
-  }, [habilitaEscondeCampos]);
+  }, [tipoDialog, habilitaEscondeCampos, enderecoSelecionado, dataPesquisa]);
 
   return (
     <DialogPrime
@@ -287,12 +322,13 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                   {mostrarTabela ? (
                     <Tabela>
                       <DataTable
+                        header="*Selecione o endereço clicando duas vezes*"
                         value={listaEnderecos}
                         selectionMode="single"
                         selection={enderecoSelecionado}
-                        onSelectionChange={(e) =>
-                          setEnderecoSelecionado(e.value)
-                        } //eslint-disable-line
+                        onSelectionChange={(e) => {
+                          setEnderecoSelecionado(e.value);
+                        }}
                         scrollable
                         paginator
                         rows={5}
@@ -337,7 +373,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                           bodyStyle={{ textAlign: 'right' }}
                         />
                         <Column
-                          field="tipopal"
+                          field="codTipoEndereco"
                           header="Tipo End"
                           style={{ width: '85px' }}
                           bodyStyle={{ textAlign: 'right' }}
@@ -348,7 +384,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                           style={{ width: '150px' }}
                         />
                         <Column
-                          field="codestrutura"
+                          field="codTipoEstrutura"
                           header="Tipo Est"
                           style={{ width: '85px' }}
                           bodyStyle={{ textAlign: 'right' }}
@@ -521,12 +557,12 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                         percWidth={28}
                         inputMode="search"
                         defaultValue="SELECIONE O TIPO DE ESTRUTURA..."
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setDataPesquisa({
                             ...dataPesquisa,
                             tipoEstrutura: Number(e.target.value),
-                          })
-                    } //eslint-disable-line
+                          });
+                        }}
                       >
                         <option value={0}>
                           SELECIONE O TIPO DE ESTRUTURA...
@@ -559,10 +595,11 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                       <DataTable
                         value={listaEnderecos}
                         selectionMode="single"
+                        header="*Selecione o endereço clicando duas vezes*"
                         selection={enderecoSelecionado}
-                        onSelectionChange={(e) =>
-                          setEnderecoSelecionado(e.value)
-                        } //eslint-disable-line
+                        onSelectionChange={(e) => {
+                          setEnderecoSelecionado(e.value);
+                        }}
                         scrollable
                         paginator
                         rows={5}
@@ -607,7 +644,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                           bodyStyle={{ textAlign: 'right' }}
                         />
                         <Column
-                          field="tipopal"
+                          field="codTipoEndereco"
                           header="Tipo End"
                           style={{ width: '85px' }}
                           bodyStyle={{ textAlign: 'right' }}
@@ -618,7 +655,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                           style={{ width: '150px' }}
                         />
                         <Column
-                          field="codestrutura"
+                          field="codTipoEstrutura"
                           header="Tipo Est"
                           style={{ width: '85px' }}
                           bodyStyle={{ textAlign: 'right' }}
@@ -719,7 +756,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                               (
                                 Number(e.target.value) *
                                 (inputPercRep / 100)
-                              ).toFixed(2),
+                              ).toFixed(0),
                             ),
                           );
                         }}
@@ -737,7 +774,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                           setInputPontoRep(
                             parseFloat(
                               (inputCapacidade * (inputPercRep / 100)).toFixed(
-                                2,
+                                0,
                               ),
                             ),
                           );
