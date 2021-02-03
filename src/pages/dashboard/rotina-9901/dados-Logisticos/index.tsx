@@ -38,7 +38,7 @@ import {
   Container,
   Content,
   Fieldset,
-  FieldsetNormaVal,
+  FieldsetDados,
   CheckRadio,
   CheckBox,
   Loanding,
@@ -1148,7 +1148,7 @@ const DadosLogistico: React.FC = () => {
                       type="number"
                       description="Cód.Prod"
                       disabled
-                      percWidth={5}
+                      percWidth={10}
                       defaultValue={dataProduto.codprod}
                     />
                     <Input
@@ -1156,14 +1156,14 @@ const DadosLogistico: React.FC = () => {
                       type="text"
                       description="Descrição"
                       disabled
-                      percWidth={30}
+                      percWidth={83.7}
                       defaultValue={dataProduto.descricao}
                     />
-                    <Fieldset title="Dados Master">
+                    <FieldsetDados title="Dados Master" percWidth={53.7}>
                       <legend>
                         <span>DADOS MASTER</span>
                       </legend>
-                      <div className="wrap">
+                      <div className="wrapDados">
                         <Input
                           name="dun"
                           type="number"
@@ -1204,7 +1204,7 @@ const DadosLogistico: React.FC = () => {
                           name="unidadeMaster"
                           type="text"
                           description="Un.Master"
-                          pxWidth={85}
+                          pxWidth={65}
                           disabled
                           defaultValue={dataProduto.unidadeMaster}
                         />
@@ -1212,10 +1212,36 @@ const DadosLogistico: React.FC = () => {
                           name="qtunitcx"
                           type="number"
                           description="Qt.Unit.Cx"
-                          pxWidth={90}
+                          pxWidth={65}
                           disabled
                           defaultValue={dataProduto.qtunitcx}
                         />
+                        <Input
+                          name="pesoLiqCx"
+                          type="number"
+                          description="Peso Liq. Cx"
+                          pxWidth={125}
+                          defaultValue={dataProduto.pesoLiqCx}
+                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
+                          onChange={(e) => {
+                            setDataProduto({
+                              ...dataProduto,
+                              pesoLiqCx: Number(e.target.value),
+                              pesoPalete: parseFloat(
+                                (
+                                  dataProduto.lastro *
+                                  dataProduto.camada *
+                                  Number(e.target.value)
+                                ).toFixed(2),
+                              ),
+                            });
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="wrapDados"
+                        style={{ marginTop: '8px', marginLeft: '0%' }}
+                      >
                         <Input
                           name="alturaCx"
                           type="number"
@@ -1309,27 +1335,6 @@ const DadosLogistico: React.FC = () => {
                           value={dataProduto.volumeCxM3}
                         />
                         <Input
-                          name="pesoLiqCx"
-                          type="number"
-                          description="Peso Liq. Cx"
-                          pxWidth={125}
-                          defaultValue={dataProduto.pesoLiqCx}
-                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
-                          onChange={(e) => {
-                            setDataProduto({
-                              ...dataProduto,
-                              pesoLiqCx: Number(e.target.value),
-                              pesoPalete: parseFloat(
-                                (
-                                  dataProduto.lastro *
-                                  dataProduto.camada *
-                                  Number(e.target.value)
-                                ).toFixed(2),
-                              ),
-                            });
-                          }}
-                        />
-                        <Input
                           name="pesoBrutoCx"
                           type="number"
                           description="Peso Bruto Cx"
@@ -1344,12 +1349,16 @@ const DadosLogistico: React.FC = () => {
                           }}
                         />
                       </div>
-                    </Fieldset>
-                    <Fieldset title="Dados Unidade">
+                    </FieldsetDados>
+                    <FieldsetDados
+                      title="Dados Unidade"
+                      style={{ marginLeft: '0.3%' }}
+                      percWidth={46}
+                    >
                       <legend>
                         <span>DADOS UNIDADE</span>
                       </legend>
-                      <div className="wrap">
+                      <div className="wrapDados">
                         <Input
                           name="ean"
                           type="number"
@@ -1388,6 +1397,25 @@ const DadosLogistico: React.FC = () => {
                           disabled
                           defaultValue={dataProduto.qtunit}
                         />
+                        <Input
+                          name="pesoLiqUn"
+                          type="number"
+                          description="Peso Liq. Un"
+                          pxWidth={125}
+                          defaultValue={dataProduto.pesoLiqUn}
+                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
+                          onChange={(e) => {
+                            setDataProduto({
+                              ...dataProduto,
+                              pesoLiqUn: Number(e.target.value),
+                            });
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="wrapDados"
+                        style={{ marginTop: '8px', marginLeft: '0%' }}
+                      >
                         <Input
                           name="alturaUn"
                           type="number"
@@ -1476,23 +1504,9 @@ const DadosLogistico: React.FC = () => {
                           name="volumeUnM3"
                           type="number"
                           description="Vol. Un m³"
-                          pxWidth={90}
+                          pxWidth={80}
                           disabled
                           value={dataProduto.volumeUnM3}
-                        />
-                        <Input
-                          name="pesoLiqUn"
-                          type="number"
-                          description="Peso Liq. Un"
-                          pxWidth={125}
-                          defaultValue={dataProduto.pesoLiqUn}
-                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
-                          onChange={(e) => {
-                            setDataProduto({
-                              ...dataProduto,
-                              pesoLiqUn: Number(e.target.value),
-                            });
-                          }}
                         />
                         <Input
                           name="pesoBrutoUn"
@@ -1509,12 +1523,12 @@ const DadosLogistico: React.FC = () => {
                           }}
                         />
                       </div>
-                    </Fieldset>
-                    <FieldsetNormaVal title="Dados Norma Palete">
+                    </FieldsetDados>
+                    <FieldsetDados title="Dados Norma Palete" percWidth={54}>
                       <legend>
                         <span>DADOS NORMA PALETE</span>
                       </legend>
-                      <div className="wrapPaleteVal">
+                      <div className="wrapDados">
                         <Input
                           name="lastro"
                           type="number"
@@ -1588,15 +1602,16 @@ const DadosLogistico: React.FC = () => {
                           disabled
                         />
                       </div>
-                    </FieldsetNormaVal>
-                    <FieldsetNormaVal
+                    </FieldsetDados>
+                    <FieldsetDados
                       title="Dados Validade"
-                      style={{ width: '49.7%', marginLeft: '0.3%' }}
+                      style={{ marginLeft: '0.3%' }}
+                      percWidth={45.7}
                     >
                       <legend>
                         <span>DADOS VALIDADE</span>
                       </legend>
-                      <div className="wrapPaleteVal">
+                      <div className="wrapDados">
                         <Input
                           name="prazoValidade"
                           type="number"
@@ -1626,7 +1641,7 @@ const DadosLogistico: React.FC = () => {
                           }}
                         />
                       </div>
-                    </FieldsetNormaVal>
+                    </FieldsetDados>
                   </Form>
                 </Content>
               </div>
@@ -2201,7 +2216,7 @@ const DadosLogistico: React.FC = () => {
                         <span>ENDEREÇO</span>
                       </legend>
                       <div className="wrap">
-                        <CheckBox percWidth={16.5}>
+                        <CheckBox percWidth={19.5}>
                           <label htmlFor="enderecamentoCubagem">
                             <input
                               id="enderecamentoCubagem"
@@ -2230,7 +2245,7 @@ const DadosLogistico: React.FC = () => {
                             Endereçamento por Cubagem
                           </label>
                         </CheckBox>
-                        <CheckBox percWidth={26}>
+                        {/* <CheckBox percWidth={26}>
                           <label htmlFor="validaCpPkAbastecimento">
                             <input
                               id="validaCpPkAbastecimento"
@@ -2260,8 +2275,8 @@ const DadosLogistico: React.FC = () => {
                             />
                             Validar Capacidade do picking no abastecimento
                           </label>
-                        </CheckBox>
-                        <CheckBox percWidth={19.5}>
+                        </CheckBox> */}
+                        <CheckBox percWidth={16}>
                           <label htmlFor="usaControleVal">
                             <input
                               id="usaControleVal"
@@ -2353,7 +2368,7 @@ const DadosLogistico: React.FC = () => {
                             Controle de estoque por lote
                           </label>
                         </CheckBox>
-                        <CheckBox percWidth={19}>
+                        <CheckBox percWidth={20}>
                           <label htmlFor="multiplicadorConf">
                             <input
                               id="multiplicadorConf"
@@ -2391,7 +2406,7 @@ const DadosLogistico: React.FC = () => {
                           id="tipoEndereco"
                           name="tipoEndereco"
                           description="TIPO ENDEREÇO"
-                          percWidth={25}
+                          percWidth={20}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
                             setDataProduto({
@@ -2423,7 +2438,7 @@ const DadosLogistico: React.FC = () => {
                           id="tipoEstrutura"
                           name="tipoEstrutura"
                           description="TIPO ESTRUTURA"
-                          percWidth={25}
+                          percWidth={20}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
                             setDataProduto({
@@ -2455,7 +2470,7 @@ const DadosLogistico: React.FC = () => {
                           id="caracteristicaProduto"
                           name="caracteristicaProduto"
                           description="CARACTERÍSTICA PRODUTO"
-                          percWidth={25}
+                          percWidth={16}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
                             setDataProduto({

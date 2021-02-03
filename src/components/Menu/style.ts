@@ -18,7 +18,7 @@ export const Container = styled.div<Base>`
     font-size: 1.2em;
 
     ${(props) =>
-      (props.base === 'EPOCA' || props.base === 'EPOCATST') &&
+      (props.base === 'EPOCA' || props.base === 'EPOCATST' || 'TESTEOCI') &&
       css`
         background: #c22e2c;
         background-image: -moz-linear-gradient(135deg, rgb(3, 8, 12), #c22e2c);

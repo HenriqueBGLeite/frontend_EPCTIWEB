@@ -4,9 +4,9 @@ const api = axios.create({
   // Desenvolvimento
   // baseURL: 'https://localhost:44318/api/',
   // Homologação
-  baseURL: 'http://192.168.0.118:84/api/',
+  // baseURL: 'http://192.168.0.118:84/api/',
   // Produção
-  // baseURL: 'http://192.168.0.118:83/api/',
+  baseURL: 'http://192.168.0.118:83/api/',
 });
 
 api.interceptors.request.use(async (config) => {

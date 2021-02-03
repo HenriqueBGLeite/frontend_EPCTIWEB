@@ -65,6 +65,22 @@ interface DTOPesquisa {
   tipoPicking: 'V' | 'M' | 'P';
   tipoEndereco: number;
   tipoEstrutura: number;
+  codEndereco?: number;
+  rua?: number;
+  predio?: number;
+  nivel?: number;
+  apto?: number;
+}
+
+interface DTOPesquisaEndereco {
+  codFilial: number;
+  tipoEndereco: number;
+  tipoEstrutura: number;
+  codEndereco?: number;
+  rua?: number;
+  predio?: number;
+  nivel?: number;
+  apto?: number;
 }
 
 interface Endereco {
@@ -188,10 +204,19 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
     setEnderecoSelecionado({} as Endereco);
     setMostrarDadosPicking(false);
 
+    const dataPesquisaEndereco = {
+      codFilial: cabecalho.codfilial,
+      tipoEndereco: dataPesquisa.tipoEndereco,
+      tipoEstrutura: dataPesquisa.tipoEstrutura,
+      codEndereco: dataPesquisa.codEndereco,
+      rua: dataPesquisa.rua,
+      predio: dataPesquisa.predio,
+      nivel: dataPesquisa.nivel,
+      apto: dataPesquisa.apto,
+    } as DTOPesquisaEndereco;
+
     await api
-      .get<Endereco[]>(
-        `Rotina9901/ListaEnderecos/${cabecalho.codfilial}/${dataPesquisa.tipoEndereco}/${dataPesquisa.tipoEstrutura}`,
-      )
+      .post<Endereco[]>(`Rotina9901/ListaEnderecos/`, dataPesquisaEndereco)
       .then((response) => {
         setListaEnderecos(response.data);
         setMostrarTabela(true);
@@ -240,7 +265,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
       style={
         tipoDialog === 'EMBALAGEM'
           ? { width: '50vw', fontWeight: 'bold', fontSize: '16px' }
-          : { width: '80vw', fontWeight: 'bold', fontSize: '16px' }
+          : { width: '90vw', fontWeight: 'bold', fontSize: '16px' }
       }
       onHide={() => setAction(action)}
       blockScroll
@@ -510,7 +535,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                         id="tipoPicking"
                         name="tipoPicking"
                         description="TIPO PICKING"
-                        percWidth={28}
+                        percWidth={9}
                         inputMode="search"
                         onChange={(e) => {
                           if (mostrarDadosPicking) {
@@ -531,7 +556,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                         id="tipoEndereco"
                         name="tipoEndereco"
                         description="TIPO ENDEREÇO"
-                        percWidth={28}
+                        percWidth={23}
                         inputMode="search"
                         defaultValue="SELECIONE O TIPO DO ENDEREÇO..."
                         onChange={(e) => {
@@ -554,7 +579,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                         id="tipoEstrutura"
                         name="tipoEstrutura"
                         description="TIPO ESTRUTURA"
-                        percWidth={28}
+                        percWidth={23}
                         inputMode="search"
                         defaultValue="SELECIONE O TIPO DE ESTRUTURA..."
                         onChange={(e) => {
@@ -573,6 +598,66 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                           </option>
                         ))}
                       </Select>
+                      <Input
+                        percWidth={10}
+                        name="codEnderecoPesquisa"
+                        type="number"
+                        description="Cód.Endereço"
+                        onChange={(e) => {
+                          setDataPesquisa({
+                            ...dataPesquisa,
+                            codEndereco: Number(e.target.value),
+                          });
+                        }}
+                      />
+                      <Input
+                        percWidth={4}
+                        name="ruaPesquisa"
+                        type="number"
+                        description="Rua"
+                        onChange={(e) => {
+                          setDataPesquisa({
+                            ...dataPesquisa,
+                            rua: Number(e.target.value),
+                          });
+                        }}
+                      />
+                      <Input
+                        percWidth={5.5}
+                        name="predioPesquisa"
+                        type="number"
+                        description="Prédio"
+                        onChange={(e) => {
+                          setDataPesquisa({
+                            ...dataPesquisa,
+                            predio: Number(e.target.value),
+                          });
+                        }}
+                      />
+                      <Input
+                        percWidth={5}
+                        name="nivelPesquisa"
+                        type="number"
+                        description="Nível"
+                        onChange={(e) => {
+                          setDataPesquisa({
+                            ...dataPesquisa,
+                            nivel: Number(e.target.value),
+                          });
+                        }}
+                      />
+                      <Input
+                        percWidth={5}
+                        name="aptoPesquisa"
+                        type="number"
+                        description="Apto"
+                        onChange={(e) => {
+                          setDataPesquisa({
+                            ...dataPesquisa,
+                            apto: Number(e.target.value),
+                          });
+                        }}
+                      />
                       <button
                         type="button"
                         className="pesquisarButton"
@@ -741,7 +826,7 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
                         disabled
                       />
                       <Input
-                        percWidth={12}
+                        percWidth={15}
                         id="capacidadeFoco"
                         name="capacidade"
                         type="number"

@@ -146,6 +146,7 @@ interface CorteCarga {
   numtranswms: number;
   codfuncger: number;
   homologacao: boolean;
+  modeloSep: string;
 }
 
 interface BoxData {
@@ -890,11 +891,13 @@ const Rotina9950: React.FC = () => {
         dataCorteCarga.numtranswms = -1;
         dataCorteCarga.codfuncger = usuario.codigo;
         dataCorteCarga.homologacao = homologacao;
+        dataCorteCarga.modeloSep = modeloSeparacao;
       } else {
         dataCorteCarga.numcar = -1;
         dataCorteCarga.numtranswms = pedidosSelecionados[0].numtranswms;
         dataCorteCarga.codfuncger = usuario.codigo;
         dataCorteCarga.homologacao = homologacao;
+        dataCorteCarga.modeloSep = modeloSeparacao;
       }
 
       const cortouCarga = await api.post('Rotina9950/Corte/', dataCorteCarga);
@@ -975,10 +978,6 @@ const Rotina9950: React.FC = () => {
         setDialogGerar(false);
         gerarOs(box);
       } else {
-        createMessage({
-          type: 'info',
-          message: 'Operação abortada pelo usuário.',
-        });
         setDialogGerar(false);
       }
     },
@@ -1711,10 +1710,6 @@ const Rotina9950: React.FC = () => {
         setLoading(false);
         document.getElementById('pesquisar')?.click();
       } else {
-        createMessage({
-          type: 'info',
-          message: 'Operação abortada pelo usuário.',
-        });
         setDialogImprimir(false);
       }
     },
@@ -2067,9 +2062,11 @@ const Rotina9950: React.FC = () => {
               percWidth={4}
               onChange={(e) => setFilialSelecionada(Number(e.target.value))}
             >
-              <option value={usuario.filial}>{usuario.filial}</option>
+              <option value={filialSelecionada}>{filialSelecionada}</option>
               {filiais
-                .filter((fil) => Number(fil.codigo) !== Number(usuario.filial))
+                .filter(
+                  (fil) => Number(fil.codigo) !== Number(filialSelecionada),
+                )
                 .map((filial) => (
                   <option key={filial.codigo} value={filial.codigo}>
                     {filial.codigo}
@@ -2300,10 +2297,13 @@ const Rotina9950: React.FC = () => {
               </button>
               {(modeloSeparacao === 'C' &&
                 cargaSelecionadas[0]?.separacao === 100 &&
-                cargaSelecionadas.length === 1) ||
+                cargaSelecionadas[0]?.conferencia !== 100 &&
+                cargaSelecionadas.length === 1 &&
+                gerados &&
+                !faturados &&
+                !loading) ||
               (modeloSeparacao !== 'C' &&
                 pedidosSelecionados.length === 1 &&
-                filialSelecionada !== 25 &&
                 gerados &&
                 !faturados &&
                 !loading) ? (

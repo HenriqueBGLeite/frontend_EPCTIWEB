@@ -14,11 +14,11 @@ export const Container = styled.div`
     flex-wrap: wrap;
 
     div {
-      margin: 6px 0.5%;
+      margin: 6px 0.3%;
     }
 
     .pesquisarButton {
-      width: 12% !important;
+      width: 9% !important;
       display: flex;
       align-items: center;
       justify-content: center;

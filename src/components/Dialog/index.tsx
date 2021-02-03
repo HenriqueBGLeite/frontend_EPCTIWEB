@@ -122,7 +122,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
       setLoading(true);
       if (tipoSeparacao === 'C') {
         api
-          .get<CortesDTO[]>(`Rotina9950/BuscaCortes/${numcar}/C`)
+          .get<CortesDTO[]>(`Rotina9950/BuscaCortes/${numcar}/${tipoSeparacao}`)
           .then((response) => {
             const achouCortes = response.data;
 
@@ -157,7 +157,9 @@ const Dialog: React.FC<DialogProps> = (props) => {
           });
       } else {
         api
-          .get<CortesDTO[]>(`Rotina9950/BuscaCortes/${numtranswms}/T`)
+          .get<CortesDTO[]>(
+            `Rotina9950/BuscaCortes/${numtranswms}/${tipoSeparacao}`,
+          )
           .then((response) => {
             const achouCortes = response.data;
 

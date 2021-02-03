@@ -53,6 +53,10 @@ const SignIn: React.FC = () => {
         label: 'MINAS RURAL',
       },
       {
+        value: 'TESTEOCI',
+        label: 'EPOCA NUVEM',
+      },
+      {
         value: 'EPOCATST',
         label: 'EPOCA TESTE',
       },
@@ -122,7 +126,7 @@ const SignIn: React.FC = () => {
           <Form ref={formRef} onSubmit={handleSubmit}>
             <p>
               Versão {document.location.port === '8203' ? 'de Homologação' : ''}
-              : 22.01.21.01
+              : 03.02.21.01
             </p>
             <Input
               focus

@@ -204,10 +204,10 @@ const Rotina9901: React.FC = () => {
                     setFilialSelecionada(Number(e.target.value));
                   }}
                 >
-                  <option value={usuario.filial}>{usuario.filial}</option>
+                  <option value={filialSelecionada}>{filialSelecionada}</option>
                   {filiais
                     .filter(
-                      (fil) => Number(fil.codigo) !== Number(usuario.filial),
+                      (fil) => Number(fil.codigo) !== Number(filialSelecionada),
                     )
                     .map((filial) => (
                       <option key={filial.codigo} value={filial.codigo}>

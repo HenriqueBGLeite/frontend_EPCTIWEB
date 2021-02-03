@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { shade } from 'polished';
 
-interface RadioBox {
+interface AjustaWidth {
   percWidth: number;
 }
 
@@ -223,8 +223,13 @@ export const Fieldset = styled.fieldset`
   }
 `;
 
-export const FieldsetNormaVal = styled.fieldset`
-  width: 50%;
+export const FieldsetDados = styled.fieldset<AjustaWidth>`
+  ${(props) =>
+    props.percWidth &&
+    css`
+      width: ${props.percWidth}%;
+    `}
+
   padding: 6px;
   border-radius: 10px;
   margin: 6px 0 6px 0;
@@ -234,7 +239,7 @@ export const FieldsetNormaVal = styled.fieldset`
     color: #000000;
   }
 
-  .wrapPaleteVal {
+  .wrapDados {
     display: flex;
     flex-wrap: wrap;
     margin-top: -6px;
@@ -249,7 +254,7 @@ export const FieldsetNormaVal = styled.fieldset`
   }
 `;
 
-export const CheckRadio = styled.div<RadioBox>`
+export const CheckRadio = styled.div<AjustaWidth>`
   border-radius: 10px;
   padding: 0px 4px;
 
@@ -310,7 +315,7 @@ export const CheckRadio = styled.div<RadioBox>`
   }
 `;
 
-export const CheckBox = styled.div<RadioBox>`
+export const CheckBox = styled.div<AjustaWidth>`
   display: flex;
   flex-direction: column;
   margin-right: 4px;
