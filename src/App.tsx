@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import { ToastContainer } from 'react-toastify';
+import { ToastAnimated } from './components/Toast';
 
 import GlobalStyle from './styles/global';
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -14,12 +14,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <AppProvider>
-        <ToastContainer
-          position="top-center"
-          autoClose={4000}
-          newestOnTop
-          closeOnClick
-        />
+        <ToastAnimated />
         <Routes />
       </AppProvider>
 

@@ -131,7 +131,8 @@ interface DataProduto {
       capacidade: number;
       percPontoReposicao: number;
       pontoReposicao: number;
-      estoque: number;
+      permiteTransfPk: string;
+      permiteExcluirPk: string;
     },
   ];
   // Endereços de loja
@@ -224,7 +225,8 @@ interface DataPicking {
   percPontoReposicao: number;
   percReposicao?: number;
   pontoReposicao: number;
-  estoque: number;
+  permiteTransfPk: string;
+  permiteExcluirPk: string;
 }
 
 interface DataEndLoja {
@@ -984,46 +986,60 @@ const DadosLogistico: React.FC = () => {
         data.codTipoEstrutura = Number(data.tipoEstrutura);
         data.percPontoReposicao = Number(data.percReposicao);
 
-        dataListProduto.tipoEndereco
-          .filter((tipo) => tipo.codigo === data.codTipoEndereco)
-          .map((tipo) => {
-            data.descTipoEndereco = tipo.descricao;
+        if (
+          data.codTipoEndereco &&
+          data.codTipoEstrutura &&
+          data.capacidade &&
+          data.percPontoReposicao &&
+          data.pontoReposicao
+        ) {
+          dataListProduto.tipoEndereco
+            .filter((tipo) => tipo.codigo === data.codTipoEndereco)
+            .map((tipo) => {
+              data.descTipoEndereco = tipo.descricao;
 
-            return tipo;
+              return tipo;
+            });
+
+          dataListProduto.tipoEstrutura
+            .filter((tipo) => tipo.codigo === data.codTipoEstrutura)
+            .map((tipo) => {
+              data.descTipoEstrutura = tipo.descricao;
+
+              return tipo;
+            });
+
+          dataProduto.picking
+            .filter(
+              (pk) =>
+                Number(pk.codEndereco) ===
+                Number(pickingSelecionado.codEndereco),
+            )
+            .map((pk) => {
+              pk.codTipoEndereco = data.codTipoEndereco;
+              pk.descTipoEndereco = data.descTipoEndereco;
+              pk.codTipoEstrutura = data.codTipoEstrutura;
+              pk.descTipoEstrutura = data.descTipoEstrutura;
+              pk.tipoPicking = pickingSelecionado.tipoPicking;
+              pk.codEndereco = data.codEndereco;
+              pk.deposito = data.deposito;
+              pk.rua = data.rua;
+              pk.predio = data.predio;
+              pk.nivel = data.nivel;
+              pk.apto = data.apto;
+              pk.capacidade = data.capacidade;
+              pk.percPontoReposicao = data.percPontoReposicao;
+              pk.pontoReposicao = data.pontoReposicao;
+
+              return pk;
+            });
+          setEsconderTabPicking(false);
+        } else {
+          createMessage({
+            type: 'alert',
+            message: 'Favor preencher todos os campos corretamente.',
           });
-
-        dataListProduto.tipoEstrutura
-          .filter((tipo) => tipo.codigo === data.codTipoEstrutura)
-          .map((tipo) => {
-            data.descTipoEstrutura = tipo.descricao;
-
-            return tipo;
-          });
-
-        dataProduto.picking
-          .filter(
-            (pk) =>
-              Number(pk.codEndereco) === Number(pickingSelecionado.codEndereco),
-          )
-          .map((pk) => {
-            pk.codTipoEndereco = data.codTipoEndereco;
-            pk.descTipoEndereco = data.descTipoEndereco;
-            pk.codTipoEstrutura = data.codTipoEstrutura;
-            pk.descTipoEstrutura = data.descTipoEstrutura;
-            pk.tipoPicking = pickingSelecionado.tipoPicking;
-            pk.codEndereco = data.codEndereco;
-            pk.deposito = data.deposito;
-            pk.rua = data.rua;
-            pk.predio = data.predio;
-            pk.nivel = data.nivel;
-            pk.apto = data.apto;
-            pk.capacidade = data.capacidade;
-            pk.percPontoReposicao = data.percPontoReposicao;
-            pk.pontoReposicao = data.pontoReposicao;
-
-            return pk;
-          });
-        setEsconderTabPicking(false);
+        }
       }
 
       setEdicao(false);
@@ -1168,7 +1184,7 @@ const DadosLogistico: React.FC = () => {
                           name="dun"
                           type="number"
                           description="DUN"
-                          pxWidth={145}
+                          percWidth={22}
                           defaultValue={dataProduto.dun}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1182,7 +1198,7 @@ const DadosLogistico: React.FC = () => {
                           name="embalagemMaster"
                           type="text"
                           description="Emb.Master"
-                          pxWidth={120}
+                          percWidth={21}
                           disabled
                           defaultValue={dataProduto.embalagemMaster}
                         />
@@ -1190,7 +1206,7 @@ const DadosLogistico: React.FC = () => {
                           name="codigoFabrica"
                           type="text"
                           description="Cód.Fábrica"
-                          pxWidth={120}
+                          percWidth={20}
                           defaultValue={dataProduto.codigoFabrica}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1204,7 +1220,7 @@ const DadosLogistico: React.FC = () => {
                           name="unidadeMaster"
                           type="text"
                           description="Un.Master"
-                          pxWidth={65}
+                          percWidth={10}
                           disabled
                           defaultValue={dataProduto.unidadeMaster}
                         />
@@ -1212,30 +1228,9 @@ const DadosLogistico: React.FC = () => {
                           name="qtunitcx"
                           type="number"
                           description="Qt.Unit.Cx"
-                          pxWidth={65}
+                          percWidth={9}
                           disabled
                           defaultValue={dataProduto.qtunitcx}
-                        />
-                        <Input
-                          name="pesoLiqCx"
-                          type="number"
-                          description="Peso Liq. Cx"
-                          pxWidth={125}
-                          defaultValue={dataProduto.pesoLiqCx}
-                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
-                          onChange={(e) => {
-                            setDataProduto({
-                              ...dataProduto,
-                              pesoLiqCx: Number(e.target.value),
-                              pesoPalete: parseFloat(
-                                (
-                                  dataProduto.lastro *
-                                  dataProduto.camada *
-                                  Number(e.target.value)
-                                ).toFixed(2),
-                              ),
-                            });
-                          }}
                         />
                       </div>
                       <div
@@ -1246,7 +1241,7 @@ const DadosLogistico: React.FC = () => {
                           name="alturaCx"
                           type="number"
                           description="Altura Cx"
-                          pxWidth={105}
+                          percWidth={10}
                           defaultValue={dataProduto.alturaCx}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1274,7 +1269,7 @@ const DadosLogistico: React.FC = () => {
                           name="larguraCx"
                           type="number"
                           description="Largura Cx"
-                          pxWidth={115}
+                          percWidth={10}
                           defaultValue={dataProduto.larguraCx}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1302,7 +1297,7 @@ const DadosLogistico: React.FC = () => {
                           name="comprimentoCx"
                           type="number"
                           description="Comp. Cx"
-                          pxWidth={110}
+                          percWidth={10}
                           defaultValue={dataProduto.comprimentoCx}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1330,15 +1325,36 @@ const DadosLogistico: React.FC = () => {
                           name="volumeCxM3"
                           type="number"
                           description="Vol. Cx m³"
-                          pxWidth={90}
+                          percWidth={10}
                           disabled
                           value={dataProduto.volumeCxM3}
+                        />
+                        <Input
+                          name="pesoLiqCx"
+                          type="number"
+                          description="Peso Liq. Cx"
+                          percWidth={12}
+                          defaultValue={dataProduto.pesoLiqCx}
+                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
+                          onChange={(e) => {
+                            setDataProduto({
+                              ...dataProduto,
+                              pesoLiqCx: Number(e.target.value),
+                              pesoPalete: parseFloat(
+                                (
+                                  dataProduto.lastro *
+                                  dataProduto.camada *
+                                  Number(e.target.value)
+                                ).toFixed(2),
+                              ),
+                            });
+                          }}
                         />
                         <Input
                           name="pesoBrutoCx"
                           type="number"
                           description="Peso Bruto Cx"
-                          pxWidth={140}
+                          percWidth={12}
                           defaultValue={dataProduto.pesoBrutoCx}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1363,7 +1379,7 @@ const DadosLogistico: React.FC = () => {
                           name="ean"
                           type="number"
                           description="EAN"
-                          pxWidth={145}
+                          percWidth={24}
                           defaultValue={dataProduto.ean}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1377,7 +1393,7 @@ const DadosLogistico: React.FC = () => {
                           name="embalagem"
                           type="text"
                           description="Emb.Unit"
-                          pxWidth={100}
+                          percWidth={21}
                           disabled
                           defaultValue={dataProduto.embalagem}
                         />
@@ -1385,7 +1401,7 @@ const DadosLogistico: React.FC = () => {
                           name="unidade"
                           type="text"
                           description="Unidade"
-                          pxWidth={85}
+                          percWidth={10}
                           disabled
                           defaultValue={dataProduto.unidade}
                         />
@@ -1393,23 +1409,9 @@ const DadosLogistico: React.FC = () => {
                           name="qtunit"
                           type="number"
                           description="Qt.Unit"
-                          pxWidth={90}
+                          percWidth={8}
                           disabled
                           defaultValue={dataProduto.qtunit}
-                        />
-                        <Input
-                          name="pesoLiqUn"
-                          type="number"
-                          description="Peso Liq. Un"
-                          pxWidth={125}
-                          defaultValue={dataProduto.pesoLiqUn}
-                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
-                          onChange={(e) => {
-                            setDataProduto({
-                              ...dataProduto,
-                              pesoLiqUn: Number(e.target.value),
-                            });
-                          }}
                         />
                       </div>
                       <div
@@ -1420,7 +1422,7 @@ const DadosLogistico: React.FC = () => {
                           name="alturaUn"
                           type="number"
                           description="Altura Un"
-                          pxWidth={103}
+                          percWidth={10}
                           defaultValue={dataProduto.alturaUn}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1448,7 +1450,7 @@ const DadosLogistico: React.FC = () => {
                           name="larguraUn"
                           type="number"
                           description="Largura Un"
-                          pxWidth={114}
+                          percWidth={12}
                           defaultValue={dataProduto.larguraUn}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1476,7 +1478,7 @@ const DadosLogistico: React.FC = () => {
                           name="comprimentoUn"
                           type="number"
                           description="Comp. Un"
-                          pxWidth={108}
+                          percWidth={11}
                           defaultValue={dataProduto.comprimentoUn}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1504,15 +1506,29 @@ const DadosLogistico: React.FC = () => {
                           name="volumeUnM3"
                           type="number"
                           description="Vol. Un m³"
-                          pxWidth={80}
+                          percWidth={12}
                           disabled
                           value={dataProduto.volumeUnM3}
+                        />
+                        <Input
+                          name="pesoLiqUn"
+                          type="number"
+                          description="Peso Liq. Un"
+                          percWidth={13}
+                          defaultValue={dataProduto.pesoLiqUn}
+                          disabled={usuario.permiteAltDadosLogisticos === 'N'}
+                          onChange={(e) => {
+                            setDataProduto({
+                              ...dataProduto,
+                              pesoLiqUn: Number(e.target.value),
+                            });
+                          }}
                         />
                         <Input
                           name="pesoBrutoUn"
                           type="number"
                           description="Peso Bruto Un"
-                          pxWidth={140}
+                          percWidth={14}
                           defaultValue={dataProduto.pesoBrutoUn}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1533,7 +1549,7 @@ const DadosLogistico: React.FC = () => {
                           name="lastro"
                           type="number"
                           description="Lastro"
-                          pxWidth={115}
+                          percWidth={10}
                           defaultValue={dataProduto.lastro}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1561,7 +1577,7 @@ const DadosLogistico: React.FC = () => {
                           name="camada"
                           type="number"
                           description="Camada"
-                          pxWidth={115}
+                          percWidth={10}
                           defaultValue={dataProduto.camada}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1589,7 +1605,7 @@ const DadosLogistico: React.FC = () => {
                           name="totPalete"
                           type="number"
                           description="Total Palete"
-                          pxWidth={115}
+                          percWidth={10}
                           disabled
                           value={dataProduto.totPalete}
                         />
@@ -1597,7 +1613,7 @@ const DadosLogistico: React.FC = () => {
                           name="pesoPalete"
                           type="number"
                           description="Peso Palete"
-                          pxWidth={125}
+                          percWidth={10}
                           value={dataProduto.pesoPalete}
                           disabled
                         />
@@ -1616,7 +1632,7 @@ const DadosLogistico: React.FC = () => {
                           name="prazoValidade"
                           type="number"
                           description="Prazo Val. (dias)"
-                          pxWidth={155}
+                          percWidth={15}
                           defaultValue={dataProduto.prazoValidade}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -1630,7 +1646,7 @@ const DadosLogistico: React.FC = () => {
                           name="percShelfLife"
                           type="number"
                           description="% Shelf Life"
-                          pxWidth={120}
+                          percWidth={12}
                           defaultValue={dataProduto.percShelfLife}
                           disabled={usuario.permiteAltDadosLogisticos === 'N'}
                           onChange={(e) => {
@@ -2601,7 +2617,7 @@ const DadosLogistico: React.FC = () => {
                           setDialogTransfPicking(true);
                         }}
                         disabled={
-                          pickingSelecionado?.estoque === 0 ||
+                          pickingSelecionado?.permiteTransfPk === 'N' ||
                           !pickingSelecionado?.codEndereco ||
                           usuario.permiteAltDadosLogisticos === 'N'
                         }
@@ -2613,7 +2629,7 @@ const DadosLogistico: React.FC = () => {
                         type="button"
                         onClick={() => setDialogExclusao(true)}
                         disabled={
-                          pickingSelecionado?.estoque > 0 ||
+                          pickingSelecionado?.permiteExcluirPk === 'N' ||
                           !pickingSelecionado?.codEndereco ||
                           usuario.permiteAltDadosLogisticos === 'N'
                         }

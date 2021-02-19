@@ -14,16 +14,18 @@ const createMessage = ({ type, message }: ToastDTO): void => {
       toast.success(message);
       break;
     case 'alert':
-      toast.warn(message);
+      toast.warn(message, { autoClose: false });
       break;
     case 'error':
-      toast.error(message);
+      toast.error(message, { autoClose: false });
       break;
     default:
       toast.info(message);
   }
 };
 
-const ToastAnimated: React.FC = () => <Toast />;
+const ToastAnimated: React.FC = () => (
+  <Toast position="top-center" autoClose={4000} newestOnTop closeOnClick />
+);
 
 export { ToastAnimated, createMessage };

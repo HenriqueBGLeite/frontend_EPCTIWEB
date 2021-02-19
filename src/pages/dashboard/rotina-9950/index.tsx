@@ -694,6 +694,18 @@ const Rotina9950: React.FC = () => {
                 message: responseCarga.data,
               });
               document.getElementById('pesquisar')?.click();
+            } else if (
+              responseCarga.data.includes(
+                'Carga(s) com antecipado pendente:',
+              ) === true
+            ) {
+              setGerados(true);
+              setLoadingGerar(false);
+              createMessage({
+                type: 'alert',
+                message: responseCarga.data,
+              });
+              document.getElementById('pesquisar')?.click();
             } else {
               createMessage({
                 type: 'error',
@@ -2164,14 +2176,14 @@ const Rotina9950: React.FC = () => {
               </label>
             </CheckRadio>
             <Input
-              percWidth={12}
+              percWidth={11.5}
               name="dataInicial"
               description="Data Inicial"
               type="date"
               defaultValue={dataInicioFim.inicio}
             />
             <Input
-              percWidth={12}
+              percWidth={11.5}
               name="dataFinal"
               description="Data Final"
               defaultValue={dataInicioFim.fim}
@@ -2204,7 +2216,7 @@ const Rotina9950: React.FC = () => {
             )}
             {modeloSeparacao !== 'C' ? (
               <Input
-                percWidth={8}
+                percWidth={8.5}
                 name="numped"
                 type="number"
                 description="Num. Pedido"
@@ -2220,7 +2232,7 @@ const Rotina9950: React.FC = () => {
               description="Num. O.S."
             />
             <Input
-              percWidth={6}
+              percWidth={6.5}
               name="tipoos"
               type="number"
               description="Tipo O.S."
@@ -2302,8 +2314,15 @@ const Rotina9950: React.FC = () => {
                 gerados &&
                 !faturados &&
                 !loading) ||
-              (modeloSeparacao !== 'C' &&
+              (modeloSeparacao === 'A' &&
                 pedidosSelecionados.length === 1 &&
+                gerados &&
+                !faturados &&
+                !loading) ||
+              (modeloSeparacao === 'P' &&
+                pedidosSelecionados.length === 1 &&
+                pedidosSelecionados[0].separacao === 100 &&
+                pedidosSelecionados[0]?.conferencia !== 100 &&
                 gerados &&
                 !faturados &&
                 !loading) ? (
@@ -2561,7 +2580,7 @@ const Rotina9950: React.FC = () => {
                     rows={20}
                     resizableColumns
                     columnResizeMode="expand"
-                    style={{ width: '99%' }}
+                    style={{ width: '100%' }}
                     selection={pedidosSelecionados}
                     onSelectionChange={(e) => selecionaPedidos(e)}
                     headerColumnGroup={cabecalhoPed}

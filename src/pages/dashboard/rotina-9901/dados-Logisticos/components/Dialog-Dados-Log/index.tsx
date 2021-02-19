@@ -143,23 +143,6 @@ const DialogDadosLog: React.FC<DialogProps> = (props) => {
         });
     }
 
-    if (tipoDialog === 'PKTRANSF') {
-      api
-        .get<Endereco[]>(
-          `Rotina9901/ListaEnderecosLivres/${cabecalho.codfilial}`,
-        )
-        .then((response) => {
-          setListaEnderecos(response.data);
-          setMostrarTabela(true);
-        })
-        .catch((err) => {
-          createMessage({
-            type: 'error',
-            message: `Erro: ${err.message}`,
-          });
-        });
-    }
-
     if (edicaoPk) {
       setOcultarPesquisa(true);
       setMostrarDadosPicking(true);
