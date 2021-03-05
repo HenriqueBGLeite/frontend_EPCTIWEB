@@ -10,7 +10,12 @@ export const Toast = styled(ToastContainer)`
     background: #008000;
   }
   .Toastify__toast--warning {
+    color: #000;
     background: #ffd700;
+
+    button {
+      color: #000;
+    }
   }
   .Toastify__toast--error {
     background: #ff0000;

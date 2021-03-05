@@ -11,13 +11,13 @@ interface ToastDTO {
 const createMessage = ({ type, message }: ToastDTO): void => {
   switch (type) {
     case 'success':
-      toast.success(message);
+      toast.success(message, { autoClose: 4000 });
       break;
     case 'alert':
-      toast.warn(message, { autoClose: false });
+      toast.warn(message);
       break;
     case 'error':
-      toast.error(message, { autoClose: false });
+      toast.error(message);
       break;
     default:
       toast.info(message);
@@ -25,7 +25,13 @@ const createMessage = ({ type, message }: ToastDTO): void => {
 };
 
 const ToastAnimated: React.FC = () => (
-  <Toast position="top-center" autoClose={4000} newestOnTop closeOnClick />
+  <Toast
+    style={{ width: '94%', marginLeft: '3.3em' }}
+    position="top-left"
+    autoClose={false}
+    newestOnTop
+    closeOnClick
+  />
 );
 
 export { ToastAnimated, createMessage };

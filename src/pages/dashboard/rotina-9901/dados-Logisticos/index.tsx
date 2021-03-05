@@ -285,7 +285,6 @@ const DadosLogistico: React.FC = () => {
   const [dataListProduto, setDataListProduto] = useState<DataListProduto>(
     {} as DataListProduto,
   );
-  const [compTabela, setCompTabela] = useState('');
   const [pickingSelecionado, setPickingSelecionado] = useState(
     {} as DataPicking,
   );
@@ -385,11 +384,6 @@ const DadosLogistico: React.FC = () => {
           message: `Erro: ${err.response.data}`,
         });
       });
-
-    const tamanhoTela = window.innerWidth;
-    const tamanhoPlanilha = tamanhoTela - tamanhoTela * 0.08;
-
-    setCompTabela(String(parseFloat(tamanhoPlanilha.toFixed(2))));
 
     // const impedeReload = (): void => {
     //   window.addEventListener('beforeunload', (event) => {
@@ -683,11 +677,29 @@ const DadosLogistico: React.FC = () => {
             data.percPontoReposicao &&
             data.pontoReposicao
           ) {
+            // Outro endereço do mesmo tipo
             const encontrouOutroEndereco = dataProduto.picking.filter(
               (pk) => pk.tipoPicking === data.tipoPicking,
             );
 
+            // Se for pre picking, tem que ter um endereço de venda
+            const verificacaoPrePicking = dataProduto.picking.filter(
+              (pk) => pk.tipoPicking === 'V',
+            );
+
             if (encontrouOutroEndereco.length === 0) {
+              if (
+                verificacaoPrePicking.length === 0 &&
+                data.tipoPicking === 'P'
+              ) {
+                createMessage({
+                  type: 'alert',
+                  message:
+                    'Para cadastrar um pré picking e necessário que exista um picking do tipo VENDA cadastrado.',
+                });
+                return;
+              }
+
               if (dataProduto.picking[0]?.codEndereco === undefined) {
                 dataProduto.picking.splice(0, 1);
               }
@@ -1020,7 +1032,7 @@ const DadosLogistico: React.FC = () => {
               pk.descTipoEndereco = data.descTipoEndereco;
               pk.codTipoEstrutura = data.codTipoEstrutura;
               pk.descTipoEstrutura = data.descTipoEstrutura;
-              pk.tipoPicking = pickingSelecionado.tipoPicking;
+              pk.tipoPicking = data.tipoPicking;
               pk.codEndereco = data.codEndereco;
               pk.deposito = data.deposito;
               pk.rua = data.rua;
@@ -1033,19 +1045,24 @@ const DadosLogistico: React.FC = () => {
 
               return pk;
             });
+
           setEsconderTabPicking(false);
+          setEdicao(false);
+          setDialogPicking(false);
+          setPickingSelecionado({} as DataPicking);
+          setDialogTransfPicking(false);
         } else {
           createMessage({
             type: 'alert',
             message: 'Favor preencher todos os campos corretamente.',
           });
         }
+      } else {
+        setEdicao(false);
+        setDialogPicking(false);
+        setPickingSelecionado({} as DataPicking);
+        setDialogTransfPicking(false);
       }
-
-      setEdicao(false);
-      setDialogPicking(false);
-      setPickingSelecionado({} as DataPicking);
-      setDialogTransfPicking(false);
     },
     [pickingSelecionado, dataProduto.picking, dataListProduto],
   );
@@ -2651,7 +2668,7 @@ const DadosLogistico: React.FC = () => {
                         onSelectionChange={(e) => {
                           setPickingSelecionado(e.value);
                         }}
-                        style={{ width: `${compTabela}px` }}
+                        style={{ width: '92vw' }}
                         scrollHeight="20vh"
                         metaKeySelection={false}
                       >
@@ -2800,7 +2817,7 @@ const DadosLogistico: React.FC = () => {
                           setEnderecoLojaSelecionado(e.value);
                         }}
                         scrollHeight="20vh"
-                        style={{ width: `${compTabela}px` }}
+                        style={{ width: '92vw' }}
                         metaKeySelection={false}
                       >
                         <Column
@@ -2935,7 +2952,7 @@ const DadosLogistico: React.FC = () => {
                           setEmbAuxiliarSelecionada(e.value);
                         }}
                         scrollHeight="20vh"
-                        style={{ width: `${compTabela}px` }}
+                        style={{ width: '92vw' }}
                         metaKeySelection={false}
                       >
                         <Column
@@ -3038,7 +3055,7 @@ const DadosLogistico: React.FC = () => {
                           setCodBarraAltSelecionado(e.value);
                         }}
                         scrollHeight="20vh"
-                        style={{ width: `${compTabela}px` }}
+                        style={{ width: '92vw' }}
                         metaKeySelection={false}
                       >
                         <Column
@@ -3099,7 +3116,7 @@ const DadosLogistico: React.FC = () => {
                     <DataTable
                       value={dataProduto.enderecosWms}
                       scrollable
-                      style={{ width: `${compTabela}px` }}
+                      style={{ width: '92vw' }}
                     >
                       <Column
                         field="codEndereco"

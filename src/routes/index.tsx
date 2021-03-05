@@ -7,6 +7,7 @@ import SignIn from '../pages/SignIn';
 import Dashboard from '../pages/dashboard';
 import Rotina9950 from '../pages/dashboard/rotina-9950';
 import Rotina9901 from '../pages/dashboard/rotina-9901';
+import Rotina9909 from '../pages/dashboard/rotina-9909';
 import DadosLogistico from '../pages/dashboard/rotina-9901/dados-Logisticos';
 
 const Routes: React.FC = () => (
@@ -31,6 +32,13 @@ const Routes: React.FC = () => (
 
     {/* LOGISITICA -> EXPEDIÇÃO */}
     <Route path="/dashboard/wms-grupo" component={Rotina9950} isPrivate />
+
+    {/* LOGISITICA -> GERAR MOVIMENTAÇÃO */}
+    <Route
+      path="/dashboard/transferencia-produto"
+      component={Rotina9909}
+      isPrivate
+    />
   </Switch>
 );
 
